@@ -2,12 +2,25 @@ package com.example.facemaker
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.ImageFormat
+import android.hardware.camera2.CameraAccessException
+import android.media.ImageReader
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.HandlerThread
 import android.view.TextureView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import android.os.Handler
+import android.hardware.camera2.CameraDevice
+import android.hardware.camera2.CameraCaptureSession
 import java.util.concurrent.Semaphore
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.io.IOException
 
 class Camera : AppCompatActivity() {
     // Create camera manager instance
@@ -28,8 +41,13 @@ class Camera : AppCompatActivity() {
     // semaphore to control camera opening and closing (since camera operations are asynchronous,
     // make sure that multiple threads do not open and close the camera simultaneously
     private val cameraOpenCloseLock = Semaphore(1)
-    private val cameraStateCallback = object : android.hardware.camera2.CameraDevice.StateCallback() {
+    // ImageReader for capturing image
+    private lateinit var imageReader: ImageReader
+    private lateinit var bgHandler: Handler
+    // set the capture interval (50 ms = 0.05 sec)
+    private val captureInterval = 50L
 
+    private val cameraStateCallback = object : android.hardware.camera2.CameraDevice.StateCallback() {
         // call when camera open
         override fun onOpened(camera: android.hardware.camera2.CameraDevice) {
             cameraDevice = camera
@@ -58,6 +76,83 @@ class Camera : AppCompatActivity() {
         setContentView(R.layout.activity_camera)
 
         textureView = findViewById<TextureView>(R.id.textureView)
+
+        // (max_width, max_height, image_format, max_images)
+        imageReader = ImageReader.newInstance(640, 480, ImageFormat.JPEG, 1)
+    }
+
+    private fun startBGThread()
+    {
+        val handlerThread = HandlerThread("CameraBG")
+        handlerThread.start()
+        bgHandler = Handler(handlerThread.looper)
+    }
+
+    private fun scheduleCapture()
+    {
+        bgHandler.postDelayed(
+            {
+                imageCapture()
+                scheduleCapture()
+            }, captureInterval)
+    }
+
+    private fun imageCapture()
+    {
+        // Store cameraDevice in a local variable to avoid threading issues
+        val currentCameraDevice = cameraDevice
+        // Ensure that cameraDevice is not null
+        if (currentCameraDevice == null) return
+        try {
+            val captureBuilder = currentCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
+            captureBuilder.addTarget(imageReader.surface)
+
+            val file = createImageFile()
+            val imageReaderListener = ImageReader.OnImageAvailableListener { reader ->
+                val image = reader.acquireLatestImage()
+                val buffer = image.planes[0].buffer
+                val bytes = ByteArray(buffer.remaining())
+                buffer.get(bytes)
+                imageSave(bytes, file)
+                image.close()
+            }
+            imageReader.setOnImageAvailableListener(imageReaderListener, bgHandler)
+            val captureListener = object : CameraCaptureSession.CaptureCallback() {}
+            currentCameraDevice.createCaptureSession(
+                listOf(imageReader.surface),
+                object : CameraCaptureSession.StateCallback() {
+                    override fun onConfigured(session: CameraCaptureSession) {
+                        try {
+                            session.capture(captureBuilder.build(), captureListener, bgHandler)
+                        } catch (e: CameraAccessException) {
+                            e.printStackTrace()
+                        }
+                    }
+                    override fun onConfigureFailed(session: CameraCaptureSession) {}
+                }, bgHandler
+            )
+        } catch (e: CameraAccessException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun createImageFile(): File
+    {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val fileName = "JPEG_$timeStamp"
+        val directory = getExternalFilesDir(null)
+        return File.createTempFile(fileName, ".jpg", directory)
+    }
+
+    private fun imageSave(bytes: ByteArray, file: File)
+    {
+        try {
+            val outputStream = FileOutputStream(file)
+            outputStream.write(bytes)
+            outputStream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
     // checks for CAMERA access permission, will request permission from user if found not allowed yet
