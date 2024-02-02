@@ -6,61 +6,44 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/highscore"
+        android:id="@+id/cLogo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/aclonica"
         android:gravity="center"
         android:paddingTop="30dp"
-        android:text="Highscore:"
+        android:text="FaceMaker"
         android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/logo"
+        android:id="@+id/creditsLogo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/aclonica"
         android:gravity="center_horizontal|center_vertical"
-        android:paddingTop="80dp"
-        android:paddingBottom="150dp"
-        android:text="FaceMaker"
+        android:paddingTop="40dp"
+        android:paddingBottom="40dp"
+        android:text="Credits"
         android:textSize="48sp"
         android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/startGame"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:fontFamily="@font/aclonica"
-        android:text="START GAME"
-        android:textSize="24sp" />
-
-    <View
-        android:id="@+id/pad1"
+    <TextView
+        android:id="@+id/creditsLine1"
         android:layout_width="match_parent"
-        android:layout_height="30dp" />
-
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="40dp"
+        android:text="Roy Lee Fu Sheng\nChen Jia Wen\nJazz Teoh Yu Jue\nMichelle Lor Mee\n Charissa Yip\nKew Yu Jun"
+        android:textSize="20sp" />
     <Button
-        android:id="@+id/howToPlay"
+        android:id="@+id/creditsBackToMenu"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:fontFamily="@font/aclonica"
-        android:text="HOW TO PLAY"
-        android:textSize="24sp" />
-
-    <View
-        android:id="@+id/pad2"
-        android:layout_width="match_parent"
-        android:layout_height="30dp" />
-
-    <Button
-        android:id="@+id/credits"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:fontFamily="@font/aclonica"
-        android:text="CREDITS"
+        android:text="BACK"
         android:textSize="24sp" />
 </LinearLayout>
