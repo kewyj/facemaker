@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal|center_vertical"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/htpLogo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:paddingTop="30dp"
+        android:text="FaceMaker"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/gameoverLogo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center_horizontal|center_vertical"
+        android:paddingTop="40dp"
+        android:paddingBottom="40dp"
+        android:text="@string/gameover"
+        android:textSize="48sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/score"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:paddingTop="30dp"
+        android:text="@string/score"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/highscore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:paddingTop="30dp"
+        android:text="@string/highscore"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/playAgain"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/aclonica"
+        android:text="@string/play_again"
+        android:textSize="24sp" />
+
+    <View
+        android:id="@+id/pad1"
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
+
+    <Button
+        android:id="@+id/mainMenu"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/aclonica"
+        android:text="@string/main_menu"
+        android:textSize="24sp" />
+
+    <View
+        android:id="@+id/pad2"
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
+
+</LinearLayout>

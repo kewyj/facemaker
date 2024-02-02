@@ -17,6 +17,10 @@
             android:name=".Camera"
             android:exported="false" />
         <activity
+            android:name=".GameOver"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity
             android:name=".Credits"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
