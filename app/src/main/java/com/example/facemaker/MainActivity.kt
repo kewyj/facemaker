@@ -21,6 +21,11 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(this@MainActivity, Credits::class.java)
             startActivity(intent)
         }
+
+        findViewById<Button>(R.id.startGame).setOnClickListener {
+            val intent = Intent(this@MainActivity, Camera::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setLogo() {
