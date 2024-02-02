@@ -43,9 +43,10 @@ class Camera : AppCompatActivity() {
     private val cameraOpenCloseLock = Semaphore(1)
     // ImageReader for capturing image
     private lateinit var imageReader: ImageReader
+    private lateinit var bgThread: HandlerThread
     private lateinit var bgHandler: Handler
     // set the capture interval (50 ms = 0.05 sec)
-    private val captureInterval = 50L
+    private val captureInterval = 1000L
 
     private val cameraStateCallback = object : android.hardware.camera2.CameraDevice.StateCallback() {
         // call when camera open
@@ -78,14 +79,16 @@ class Camera : AppCompatActivity() {
         textureView = findViewById<TextureView>(R.id.textureView)
 
         // (max_width, max_height, image_format, max_images)
-        imageReader = ImageReader.newInstance(640, 480, ImageFormat.JPEG, 1)
+        imageReader = ImageReader.newInstance(240, 240, ImageFormat.JPEG, 1)
+        startBGThread()
     }
 
     private fun startBGThread()
     {
-        val handlerThread = HandlerThread("CameraBG")
-        handlerThread.start()
-        bgHandler = Handler(handlerThread.looper)
+        bgThread  = HandlerThread("CameraBG")
+        bgThread.start()
+        bgHandler = Handler(bgThread.looper)
+        scheduleCapture()
     }
 
     private fun scheduleCapture()
@@ -117,13 +120,13 @@ class Camera : AppCompatActivity() {
                 image.close()
             }
             imageReader.setOnImageAvailableListener(imageReaderListener, bgHandler)
-            val captureListener = object : CameraCaptureSession.CaptureCallback() {}
+
             currentCameraDevice.createCaptureSession(
                 listOf(imageReader.surface),
                 object : CameraCaptureSession.StateCallback() {
                     override fun onConfigured(session: CameraCaptureSession) {
                         try {
-                            session.capture(captureBuilder.build(), captureListener, bgHandler)
+                            session.capture(captureBuilder.build(), null, bgHandler)
                         } catch (e: CameraAccessException) {
                             e.printStackTrace()
                         }
@@ -167,8 +170,19 @@ class Camera : AppCompatActivity() {
 
     // when activity pauses, closeCamera() called to release resources (semaphore comes into play)
     override fun onPause() {
+        closeBGThread()
         closeCamera()
         super.onPause()
+    }
+
+    private fun closeBGThread()
+    {
+        bgThread.quitSafely()
+        try {
+            bgThread.join()
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
     }
 
     // opens camera using camera manager, checks if cameraID is not null (means suitable camera
