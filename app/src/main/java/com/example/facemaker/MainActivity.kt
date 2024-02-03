@@ -12,6 +12,11 @@ class MainActivity : ComponentActivity() {
         setContentView(R.layout.activity_main)
         setLogo()
 
+        findViewById<Button>(R.id.startGame).setOnClickListener {
+            val intent = Intent(this@MainActivity, Game::class.java)
+            startActivity(intent)
+        }
+
         findViewById<Button>(R.id.howToPlay).setOnClickListener {
             val intent = Intent(this@MainActivity, HowToPlay::class.java)
             startActivity(intent)
@@ -22,10 +27,10 @@ class MainActivity : ComponentActivity() {
             startActivity(intent)
         }
 
-        findViewById<Button>(R.id.startGame).setOnClickListener {
+        /*findViewById<Button>(R.id.startGame).setOnClickListener {
             val intent = Intent(this@MainActivity, Camera::class.java)
             startActivity(intent)
-        }
+        }*/
     }
 
     private fun setLogo() {
