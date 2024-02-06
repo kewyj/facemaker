@@ -57,8 +57,8 @@ class CameraActivity : AppCompatActivity() {
             startCamera()
         }
 
-        val cameraController = CameraController()
-        cameraController.startCapture()
+//        val cameraController = CameraController()
+//        cameraController.startCapture()
     }
 
     private fun checkMultiplePermission(): Boolean {
@@ -136,6 +136,42 @@ class CameraActivity : AppCompatActivity() {
         }
     }
 
+    private fun takePhoto() {
+        val imageFolder = File(
+            Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "Images"
+        )
+        if (!imageFolder.exists()){
+            imageFolder.mkdir()
+        }
+
+        val fileName = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis()) + ".jpg"
+        val imageFile = File(imageFolder, fileName)
+        val outputOption = OutputFileOptions.Builder(imageFile).build()
+        imageCapture.takePicture(
+            outputOption,
+            ContextCompat.getMainExecutor(this),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    val message = "Photo Capture Success!"
+                    Toast.makeText(
+                        this@CameraActivity,
+                        message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                override fun onError(exception: ImageCaptureException) {
+                    Toast.makeText(
+                        this@CameraActivity,
+                        exception.message.toString(),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        )
+    }
+
     private fun startCamera(){
         val camreProviderFuture = ProcessCameraProvider.getInstance(this)
         camreProviderFuture.addListener({
@@ -176,26 +212,26 @@ class CameraActivity : AppCompatActivity() {
     }
 }
 
-class CameraController {
-    private val handler = Handler()
-    private var isCapturing = false
-    fun startCapture() {
-        isCapturing = true
-        // 50 milliseconds = 0.05 sec
-        handler.postDelayed(captureRunnable, 50)
-    }
-
-    fun stopCapture() {
-        isCapturing = false
-        handler.removeCallbacks(captureRunnable)
-    }
-
-    private val captureRunnable = object : Runnable{
-        override fun run() {
-            if (isCapturing) {
-                handler.postDelayed(this, 50)
-            }
-        }
-    }
-
-}
+//class CameraController {
+//    private val handler = Handler()
+//    private var isCapturing = false
+//    fun startCapture() {
+//        isCapturing = true
+//        // 50 milliseconds = 0.05 sec
+//        handler.postDelayed(captureRunnable, 50)
+//    }
+//
+//    fun stopCapture() {
+//        isCapturing = false
+//        handler.removeCallbacks(captureRunnable)
+//    }
+//
+//    private val captureRunnable = object : Runnable{
+//        override fun run() {
+//            if (isCapturing) {
+//
+//                handler.postDelayed(this, 50)
+//            }
+//        }
+//    }
+//}
