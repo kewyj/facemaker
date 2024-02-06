@@ -20,6 +20,7 @@ import com.example.facemaker.databinding.ActivityCameraBinding
 import kotlin.math.abs
 import android.os.Handler
 import android.util.Log
+import android.util.Size
 import android.widget.Toast
 import androidx.camera.core.Camera
 import androidx.camera.core.ImageCapture.OutputFileOptions
@@ -204,26 +205,28 @@ class CameraActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
-    private fun aspectRatio(width: Int, height: Int): Int {
-        val previewRatio = maxOf(width, height).toDouble() / minOf(width, height)
-        return if (abs(previewRatio - 4.0 / 3.0) <= abs(previewRatio - 16.0 / 9.0)) {
-            AspectRatio.RATIO_4_3
-        } else {
-            AspectRatio.RATIO_16_9
-        }
-    }
+//    private fun aspectRatio(width: Int, height: Int): Int {
+//        val previewRatio = maxOf(width, height).toDouble() / minOf(width, height)
+//        return if (abs(previewRatio - 4.0 / 3.0) <= abs(previewRatio - 16.0 / 9.0)) {
+//            AspectRatio.RATIO_4_3
+//        } else {
+//            AspectRatio.RATIO_16_9
+//        }
+//    }
     private fun bindCameraUserCases() {
-        val screenAspectRatio = aspectRatio(mainBinding.previewView.width, mainBinding.previewView.height)
+        // set resolution to 244 by 244
+        val targetResolution = Size(244,244)
+        //val screenAspectRatio = aspectRatio(mainBinding.previewView.width, mainBinding.previewView.height)
         val rotation = mainBinding.previewView.display.rotation
-        val resolutionSelector = ResolutionSelector.Builder().setAspectRatioStrategy(
-            AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO)
-        ).build()
+        //val resolutionSelector = ResolutionSelector.Builder().addTargetResolution(resolution).build()
 
-        val preview = Preview.Builder().setResolutionSelector(resolutionSelector).setTargetRotation(rotation).build().also{
+        val preview = Preview.Builder().setTargetResolution(targetResolution)
+            .setTargetRotation(rotation).build().also{
             it.setSurfaceProvider(mainBinding.previewView.surfaceProvider)
         }
 
-        imageCapture = ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY).setResolutionSelector(resolutionSelector).setTargetRotation(rotation).build()
+        imageCapture = ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY).setTargetResolution(targetResolution)
+            .setTargetRotation(rotation).build()
         cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
         try{
@@ -232,7 +235,6 @@ class CameraActivity : AppCompatActivity() {
         } catch (e:Exception){
             e.printStackTrace()
         }
-
     }
 }
 
