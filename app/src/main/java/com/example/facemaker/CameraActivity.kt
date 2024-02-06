@@ -2,6 +2,8 @@ package com.example.facemaker
 
 import android.content.DialogInterface
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -25,10 +27,12 @@ import android.widget.Toast
 import androidx.camera.core.Camera
 import androidx.camera.core.ImageCapture.OutputFileOptions
 import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlinx.coroutines.*
+import java.nio.ByteBuffer
 
 class CameraActivity : AppCompatActivity() {
     private val mainBinding: ActivityCameraBinding by lazy{
@@ -51,6 +55,9 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var camera: Camera
     private lateinit var  cameraSelector: CameraSelector
     private var lensFacing = CameraSelector.LENS_FACING_FRONT
+
+    //bitmap
+    lateinit var bitmap: Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,29 +179,51 @@ class CameraActivity : AppCompatActivity() {
             count++
         }
         val outputOption = OutputFileOptions.Builder(imageFile).build()
+
         imageCapture.takePicture(
-            outputOption,
+//            outputOption,
+//            ContextCompat.getMainExecutor(this),
+//            object : ImageCapture.OnImageSavedCallback {
+//                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+//                    val message = "Photo Capture Success!"
+//                    Toast.makeText(
+//                        this@CameraActivity,
+//                        message,
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                }
+//
+//                override fun onError(exception: ImageCaptureException) {
+//                    Toast.makeText(
+//                        this@CameraActivity,
+//                        exception.message.toString(),
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                    Log.d("ERROR", exception.message.toString());
+//                }
+//            }
+
+            // in future will change to onCaptureSuccess after testing
             ContextCompat.getMainExecutor(this),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    val message = "Photo Capture Success!"
-                    Toast.makeText(
-                        this@CameraActivity,
-                        message,
-                        Toast.LENGTH_LONG
-                    ).show()
+            object : ImageCapture.OnImageCapturedCallback() {
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    bitmap = imageProxyToBitmap(image)
+                    super.onCaptureSuccess(image)
                 }
 
                 override fun onError(exception: ImageCaptureException) {
-                    Toast.makeText(
-                        this@CameraActivity,
-                        exception.message.toString(),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    Log.d("ERROR", exception.message.toString());
+                    super.onError(exception)
                 }
             }
         )
+    }
+
+    private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
+        val planeProxy = image.planes[0]
+        val buffer: ByteBuffer = planeProxy.buffer
+        val bytes = ByteArray(buffer.remaining())
+        buffer.get(bytes)
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 
     private fun startCamera(){
