@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
         }
 
         findViewById<Button>(R.id.startGame).setOnClickListener {
-            val intent = Intent(this@MainActivity, Camera::class.java)
+            val intent = Intent(this@MainActivity, CameraActivity::class.java)
             startActivity(intent)
         }
     }
