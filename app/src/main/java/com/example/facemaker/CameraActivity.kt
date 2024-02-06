@@ -19,6 +19,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.example.facemaker.databinding.ActivityCameraBinding
 import kotlin.math.abs
 import android.os.Handler
+import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.Camera
 import androidx.camera.core.ImageCapture.OutputFileOptions
@@ -26,6 +27,7 @@ import androidx.camera.core.ImageCaptureException
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlinx.coroutines.*
 
 class CameraActivity : AppCompatActivity() {
     private val mainBinding: ActivityCameraBinding by lazy{
@@ -57,8 +59,22 @@ class CameraActivity : AppCompatActivity() {
             startCamera()
         }
 
-//        val cameraController = CameraController()
-//        cameraController.startCapture()
+        // first mtd
+        // val cameraController = CameraController()
+        // cameraController.startCapture()
+
+        // second mtd
+        //        runBlocking {
+        //            repeat(1000){
+        //                takePhoto()
+        //                delay(50)
+        //            }
+        //        }
+
+        // third mtd only captures when button pressed
+        mainBinding.captureIB.setOnClickListener{
+            takePhoto()
+        }
     }
 
     private fun checkMultiplePermission(): Boolean {
@@ -145,8 +161,15 @@ class CameraActivity : AppCompatActivity() {
             imageFolder.mkdir()
         }
 
-        val fileName = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(System.currentTimeMillis()) + ".jpg"
-        val imageFile = File(imageFolder, fileName)
+        var fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis()) + ".jpeg"
+        var imageFile = File(imageFolder, fileName)
+        var count = 1
+
+        while (imageFile.exists()){
+            fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis()) + "_$count.jpeg"
+            imageFile = File(imageFolder, fileName)
+            count++
+        }
         val outputOption = OutputFileOptions.Builder(imageFile).build()
         imageCapture.takePicture(
             outputOption,
@@ -167,6 +190,7 @@ class CameraActivity : AppCompatActivity() {
                         exception.message.toString(),
                         Toast.LENGTH_LONG
                     ).show()
+                    Log.d("ERROR", exception.message.toString());
                 }
             }
         )
@@ -212,6 +236,7 @@ class CameraActivity : AppCompatActivity() {
     }
 }
 
+// first mtd
 //class CameraController {
 //    private val handler = Handler()
 //    private var isCapturing = false
