@@ -100,11 +100,6 @@ class Game : AppCompatActivity() {
            Log.d("DEBUG", "About to take photo")
             takePhoto()
 
-
-            // Run facial expression model
-//            var intResult = runMLModel(bitmap)
-//            var result = convertToEmotion(intResult)
-           // Log.d("logging", result)
         }
 
         val timer = object : CountDownTimer(61000, 1000) {
@@ -249,13 +244,15 @@ class Game : AppCompatActivity() {
                 ContextCompat.getMainExecutor(this),
                 object : ImageCapture.OnImageCapturedCallback() {
                     override fun onCaptureSuccess(image: ImageProxy) {
-                        //try {
-                            Log.d("CAMERA", "onCaptureSuccess")
-                            val bitmap = imageProxyToBitmap(image)
-                            image.close()
-                        //} finally {
-                            super.onCaptureSuccess(image)
-                        //}
+                        Log.d("CAMERA", "onCaptureSuccess")
+                        val bitmap = imageProxyToBitmap(image)
+                        image.close()
+                        super.onCaptureSuccess(image)
+
+                        // Run facial expression model
+                        var intResult = runMLModel(bitmap)
+                        var result = convertToEmotion(intResult)
+                        Log.d("logging", result)
                     }
 
                     override fun onError(exception: ImageCaptureException) {
