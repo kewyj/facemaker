@@ -1,11 +1,34 @@
 package com.example.facemaker
 
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Environment
+import android.util.Log
+import android.util.Size
 import android.view.Choreographer
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
+import com.example.facemaker.databinding.ActivityGameBinding
+import java.io.File
+import java.nio.ByteBuffer
+import java.text.SimpleDateFormat
+import java.util.Locale
 import kotlin.random.Random
 
 class Game : AppCompatActivity() {
@@ -17,14 +40,51 @@ class Game : AppCompatActivity() {
     private var currScore : Int = 0
     private var currFace :String= "happy"
     private var timeLeft :Long = 60000000000
+
+    // Camera stuff
+    private val mainBinding: ActivityGameBinding by lazy{
+        ActivityGameBinding.inflate(layoutInflater)
+    }
+    private val multiplePermissionId = 14
+    private val multiplePermissionNameList = if (Build.VERSION.SDK_INT >= 33) {
+        arrayListOf(
+            android.Manifest.permission.CAMERA
+        )
+    } else {
+        arrayListOf(
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+    }
+
+    private lateinit var imageCapture: ImageCapture
+    private lateinit var cameraProvider: ProcessCameraProvider
+    private lateinit var camera: Camera
+    private lateinit var  cameraSelector: CameraSelector
+    private var lensFacing = CameraSelector.LENS_FACING_FRONT
+
+    //bitmap
+    lateinit var bitmap: Bitmap
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_game)
+        setContentView(mainBinding.root)
+
+        //check for camera permission
+        if (checkMultiplePermission()) {
+            startCamera()
+        }
+
         currScore = 0
         timeLeft = 60000000000
         currFace = faces.keys.toList()[Random.nextInt(faces.size)]
         updateFace()
         setScore()
+
+        // only captures when button pressed (to change)
+        mainBinding.captureIB.setOnClickListener{
+            Log.d("DEBUG", "About to take photo")
+            takePhoto()
+        }
 
         val timer = object : CountDownTimer(61000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -40,6 +100,179 @@ class Game : AppCompatActivity() {
         }
 
         timer.start()
+    }
+
+    private fun checkMultiplePermission(): Boolean {
+        val listPermissionNeeded = arrayListOf<String>()
+        for (permission in multiplePermissionNameList) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    permission
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                listPermissionNeeded.add(permission)
+            }
+        }
+        if (listPermissionNeeded.isNotEmpty()) {
+            ActivityCompat.requestPermissions(
+                this,
+                listPermissionNeeded.toTypedArray(),
+                multiplePermissionId
+            )
+            return false
+        }
+        return true
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == multiplePermissionId) {
+            if (grantResults.isNotEmpty()) {
+                var isGrant = true
+                for (element in grantResults) {
+                    if (element == PackageManager.PERMISSION_DENIED) {
+                        isGrant = false
+                    }
+                }
+                if (isGrant) {
+                    // here all permission granted successfully
+                    startCamera()
+                } else {
+                    var someDenied = false
+                    for (permission in permissions) {
+                        if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                                this,
+                                permission
+                            )
+                        ) {
+                            if (ActivityCompat.checkSelfPermission(
+                                    this,
+                                    permission
+                                ) == PackageManager.PERMISSION_DENIED
+                            ) {
+                                someDenied = true
+                            }
+                        }
+                    }
+                    if (someDenied) {
+                        // here app Setting open because all permission is not granted
+                        // and permanent denied
+                        appSettingOpen(this)
+                    } else {
+                        // here warning permission show
+                        warningPermissionDialog(this) { _: DialogInterface, which: Int ->
+                            when (which) {
+                                DialogInterface.BUTTON_POSITIVE ->
+                                    checkMultiplePermission()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun takePhoto() {
+        val imageFolder = File(
+            Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "Images"
+        )
+        if (!imageFolder.exists()){
+            imageFolder.mkdir()
+        }
+
+        var fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis()) + ".jpeg"
+        var imageFile = File(imageFolder, fileName)
+        var count = 1
+
+        while (imageFile.exists()){
+            fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis()) + "_$count.jpeg"
+            imageFile = File(imageFolder, fileName)
+            count++
+        }
+        val outputOption = ImageCapture.OutputFileOptions.Builder(imageFile).build()
+
+        imageCapture.takePicture(
+//            outputOption,
+//            ContextCompat.getMainExecutor(this),
+//            object : ImageCapture.OnImageSavedCallback {
+//                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+//                    val message = "Photo Capture Success!"
+//                    Toast.makeText(
+//                        this@CameraActivity,
+//                        message,
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                }
+//
+//                override fun onError(exception: ImageCaptureException) {
+//                    Toast.makeText(
+//                        this@CameraActivity,
+//                        exception.message.toString(),
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                    Log.d("ERROR", exception.message.toString());
+//                }
+//            }
+
+            // in future will change to onCaptureSuccess after testing
+            ContextCompat.getMainExecutor(this),
+            object : ImageCapture.OnImageCapturedCallback() {
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    bitmap = imageProxyToBitmap(image)
+                    super.onCaptureSuccess(image)
+                }
+
+                override fun onError(exception: ImageCaptureException) {
+                    super.onError(exception)
+                }
+            }
+        )
+    }
+
+    private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
+        val planeProxy = image.planes[0]
+        val buffer: ByteBuffer = planeProxy.buffer
+        val bytes = ByteArray(buffer.remaining())
+        buffer.get(bytes)
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    }
+
+    private fun startCamera(){
+        val camreProviderFuture = ProcessCameraProvider.getInstance(this)
+        camreProviderFuture.addListener({
+            cameraProvider = camreProviderFuture.get()
+            bindCameraUserCases()
+        }, ContextCompat.getMainExecutor(this))
+    }
+
+    private fun bindCameraUserCases() {
+        // set resolution to 244 by 244
+        val targetResolution = Size(244,244)
+        //val screenAspectRatio = aspectRatio(mainBinding.previewView.width, mainBinding.previewView.height)
+        val rotation = mainBinding.previewView.display.rotation
+        //val resolutionSelector = ResolutionSelector.Builder().addTargetResolution(resolution).build()
+
+        val preview = Preview.Builder().setTargetResolution(targetResolution)
+            .setTargetRotation(rotation).build().also{
+                it.setSurfaceProvider(mainBinding.previewView.surfaceProvider)
+            }
+
+        imageCapture = ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY).setTargetResolution(targetResolution)
+            .setTargetRotation(rotation).build()
+        cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+
+        try{
+            cameraProvider.unbindAll()
+            camera = cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, preview, imageCapture)
+        } catch (e:Exception){
+            e.printStackTrace()
+        }
     }
 
     fun getCurrentFace() : String {

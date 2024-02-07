@@ -16,7 +16,7 @@ class GameOver : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.playAgain).setOnClickListener {
-            val intent = Intent(this, Camera::class.java)
+            val intent = Intent(this, Game::class.java)
             startActivity(intent)
         }
     }

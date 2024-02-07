@@ -28,6 +28,7 @@ import androidx.camera.core.Camera
 import androidx.camera.core.ImageCapture.OutputFileOptions
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
+import com.example.facemaker.databinding.ActivityGameBinding
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -35,8 +36,8 @@ import kotlinx.coroutines.*
 import java.nio.ByteBuffer
 
 class CameraActivity : AppCompatActivity() {
-    private val mainBinding: ActivityCameraBinding by lazy{
-        ActivityCameraBinding.inflate(layoutInflater)
+    private val mainBinding: ActivityGameBinding by lazy{
+        ActivityGameBinding.inflate(layoutInflater)
     }
     private val multiplePermissionId = 14
     private val multiplePermissionNameList = if (Build.VERSION.SDK_INT >= 33) {
