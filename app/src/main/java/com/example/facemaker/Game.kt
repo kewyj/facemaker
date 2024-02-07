@@ -13,6 +13,7 @@ import android.util.Log
 import android.util.Size
 import android.view.Choreographer
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
@@ -30,8 +31,18 @@ import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.random.Random
+import com.example.facemaker.ml.FacialExpressionRecognitionModel
+import org.tensorflow.lite.DataType
+import org.tensorflow.lite.support.common.ops.NormalizeOp
+import org.tensorflow.lite.support.image.ImageProcessor
+import org.tensorflow.lite.support.image.TensorImage
+import org.tensorflow.lite.support.image.ops.ResizeOp
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 
+//lateinit var bitmap: Bitmap
 class Game : AppCompatActivity() {
+    private val emotionList = arrayOf("Neutral", "Happy", "Sad", "Surprise", "Fear", "Disgust", "Anger", "Contempt")
+
     private val faces = mapOf(
         "happy" to 0x1F60A,
         "sad" to 0x1F614,
@@ -63,11 +74,15 @@ class Game : AppCompatActivity() {
     private lateinit var  cameraSelector: CameraSelector
     private var lensFacing = CameraSelector.LENS_FACING_FRONT
 
+    private lateinit var imageProcessor : ImageProcessor
+    private lateinit var model : FacialExpressionRecognitionModel
+
     //bitmap
-    lateinit var bitmap: Bitmap
+    //
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(mainBinding.root)
+        InitialiseML()
 
         //check for camera permission
         if (checkMultiplePermission()) {
@@ -82,8 +97,14 @@ class Game : AppCompatActivity() {
 
         // only captures when button pressed (to change)
         mainBinding.captureIB.setOnClickListener{
-            Log.d("DEBUG", "About to take photo")
+           Log.d("DEBUG", "About to take photo")
             takePhoto()
+
+
+            // Run facial expression model
+//            var intResult = runMLModel(bitmap)
+//            var result = convertToEmotion(intResult)
+           // Log.d("logging", result)
         }
 
         val timer = object : CountDownTimer(61000, 1000) {
@@ -178,61 +199,72 @@ class Game : AppCompatActivity() {
     }
 
     private fun takePhoto() {
-        val imageFolder = File(
-            Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "Images"
-        )
-        if (!imageFolder.exists()){
-            imageFolder.mkdir()
-        }
+        Log.d("CAMERA", "takePhoto")
 
-        var fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis()) + ".jpeg"
-        var imageFile = File(imageFolder, fileName)
-        var count = 1
+//        val imageFolder = File(
+//            Environment.getExternalStoragePublicDirectory(
+//                Environment.DIRECTORY_PICTURES), "Images"
+//        )
+//        if (!imageFolder.exists()){
+//            imageFolder.mkdir()
+//        }
+//
+//        var fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis()) + ".jpeg"
+//        var imageFile = File(imageFolder, fileName)
+//        var count = 1
+//
+//        while (imageFile.exists()){
+//            fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis()) + "_$count.jpeg"
+//            imageFile = File(imageFolder, fileName)
+//            count++
+//        }
+//        val outputOption = ImageCapture.OutputFileOptions.Builder(imageFile).build()
 
-        while (imageFile.exists()){
-            fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis()) + "_$count.jpeg"
-            imageFile = File(imageFolder, fileName)
-            count++
-        }
-        val outputOption = ImageCapture.OutputFileOptions.Builder(imageFile).build()
+        Log.d("CAMERA", "reached here before image capture")
 
         imageCapture.takePicture(
-//            outputOption,
-//            ContextCompat.getMainExecutor(this),
-//            object : ImageCapture.OnImageSavedCallback {
-//                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-//                    val message = "Photo Capture Success!"
-//                    Toast.makeText(
-//                        this@CameraActivity,
-//                        message,
-//                        Toast.LENGTH_LONG
-//                    ).show()
-//                }
-//
-//                override fun onError(exception: ImageCaptureException) {
-//                    Toast.makeText(
-//                        this@CameraActivity,
-//                        exception.message.toString(),
-//                        Toast.LENGTH_LONG
-//                    ).show()
-//                    Log.d("ERROR", exception.message.toString());
-//                }
+//        outputOption,
+//        ContextCompat.getMainExecutor(this),
+//        object : ImageCapture.OnImageSavedCallback {
+//            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+//                val message = "Photo Capture Success!"
+//                Toast.makeText(
+//                    this@Game,
+//                    message,
+//                    Toast.LENGTH_LONG
+//                ).show()
 //            }
+//
+//            override fun onError(exception: ImageCaptureException) {
+//                Toast.makeText(
+//                    this@Game,
+//                    exception.message.toString(),
+//                    Toast.LENGTH_LONG
+//                ).show()
+//                Log.d("ERROR", exception.message.toString());
+//            }
+//        }
 
-            // in future will change to onCaptureSuccess after testing
-            ContextCompat.getMainExecutor(this),
-            object : ImageCapture.OnImageCapturedCallback() {
-                override fun onCaptureSuccess(image: ImageProxy) {
-                    bitmap = imageProxyToBitmap(image)
-                    super.onCaptureSuccess(image)
-                }
+                // in future will change to onCaptureSuccess after testing
+                ContextCompat.getMainExecutor(this),
+                object : ImageCapture.OnImageCapturedCallback() {
+                    override fun onCaptureSuccess(image: ImageProxy) {
+                        //try {
+                            Log.d("CAMERA", "onCaptureSuccess")
+                            val bitmap = imageProxyToBitmap(image)
+                            image.close()
+                        //} finally {
+                            super.onCaptureSuccess(image)
+                        //}
+                    }
 
-                override fun onError(exception: ImageCaptureException) {
-                    super.onError(exception)
+                    override fun onError(exception: ImageCaptureException) {
+                        Log.d("CAMERA", "onCaptureError")
+                        super.onError(exception)
+                    }
                 }
-            }
         )
+        Log.d("CAMERA", "onCaptureSuccess Finish calling")
     }
 
     private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
@@ -300,5 +332,48 @@ class Game : AppCompatActivity() {
     private fun updateFace() {
         var faceInt : Int = faces[currFace]?:0x1F620
         findViewById<TextView>(R.id.faceToMake).setText(String(Character.toChars(faceInt)))
+    }
+
+    fun InitialiseML() {
+        // Initialise ML stuff
+        imageProcessor = ImageProcessor.Builder()
+            .add(ResizeOp(224,224, ResizeOp.ResizeMethod.BILINEAR))
+            .add(NormalizeOp(0.0f, 255.0f))
+            .build()
+        model = FacialExpressionRecognitionModel.newInstance(this)
+    }
+
+    fun runMLModel(_bitmap : Bitmap): Int {
+
+        var tensorImage = TensorImage(DataType.FLOAT32)
+        tensorImage.load(_bitmap)
+        tensorImage = imageProcessor.process(tensorImage)
+
+        // Creates inputs for reference.
+        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 224, 224, 3), DataType.FLOAT32)
+
+        inputFeature0.loadBuffer(tensorImage.buffer)
+
+        // Runs model inference and gets result.
+        val outputs = model.process(inputFeature0)
+        val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+        val result = GetEmotionIdx(outputFeature0.floatArray)
+        return result
+    }
+
+    fun convertToEmotion(i : Int) : String {
+        return emotionList[i];
+    }
+
+    fun GetEmotionIdx(arr: FloatArray): Int {
+        var max = 1
+        for (i in 1 until arr.size) { // This will always skip neutral expression
+//            Log.d("logging", arr[i].toString())
+            if (arr[i] > arr[max]) {
+                max = i
+            }
+        }
+        return max
     }
 }
