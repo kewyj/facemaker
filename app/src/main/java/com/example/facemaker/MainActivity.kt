@@ -3,16 +3,18 @@ package com.example.facemaker
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.core.graphics.createBitmap
-import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.ViewModelProvider
 import com.example.facemaker.ml.FacialExpressionRecognitionModel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -26,7 +28,9 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var imageProcessor : ImageProcessor
     private lateinit var model : FacialExpressionRecognitionModel
+    private lateinit var viewModel: FacemakerViewModel
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -47,14 +51,31 @@ class MainActivity : ComponentActivity() {
             startActivity(intent)
         }
 
-        // Initialise the image bitmap
-        bitmap = BitmapFactory.decodeResource(this.resources, R.drawable._image1);
+        findViewById<Button>(R.id.testBtn).setOnClickListener {
+            GlobalScope.launch (Dispatchers.IO) {
+                viewModel.insert(FacemakerStruct(score = 100))
+            }
+        }
 
-        InitialiseML()
+        val application = applicationContext as FacemakerApplication
+        viewModel = ViewModelProvider(
+            this,
+            FacemakerViewModelFactory(application.repository)
+        )[FacemakerViewModel::class.java]
+
+        // Observe LiveData
+        viewModel.getAllValuesLive().observe(this) { score ->
+            Log.d("Test Score", score[0].score.toString())
+        }
+
+        // Initialise the image bitmap
+        bitmap = BitmapFactory.decodeResource(this.resources, R.drawable._image1)
+
+        initialiseML()
 
         // Run facial expression model
-        var intResult = runMLModel(bitmap)
-        var result = convertToEmotion(intResult)
+        val intResult = runMLModel(bitmap)
+        val result = convertToEmotion(intResult)
         Log.d("logging", result)
 
 
@@ -68,14 +89,15 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun setLogo() {
-        findViewById<TextView>(R.id.logo).setText("FaceMaker\n" + getEmoji(0x1F60A) + getEmoji(0x1F614) + getEmoji(0x1F620))
+        val logo = "FaceMaker\n" + getEmoji(0x1F60A) + getEmoji(0x1F614) + getEmoji(0x1F620)
+        findViewById<TextView>(R.id.logo).text = logo
     }
-    private fun getEmoji(unicode : Int): String? {
+    private fun getEmoji(unicode : Int): String {
         return String(Character.toChars(unicode))
     }
 
 
-    fun GetEmotionIdx(arr: FloatArray): Int {
+    private fun getEmotionIdx(arr: FloatArray): Int {
         var max = 1
         for (i in 1 until arr.size) { // This will always skip neutral expression
 //            Log.d("logging", arr[i].toString())
@@ -86,7 +108,7 @@ class MainActivity : ComponentActivity() {
         return max
     }
 
-    fun InitialiseML() {
+    private fun initialiseML() {
         // Initialise ML stuff
         imageProcessor = ImageProcessor.Builder()
             .add(ResizeOp(224,224, ResizeOp.ResizeMethod.BILINEAR))
@@ -95,7 +117,7 @@ class MainActivity : ComponentActivity() {
         model = FacialExpressionRecognitionModel.newInstance(this)
     }
 
-    fun runMLModel(_bitmap : Bitmap): Int {
+    private fun runMLModel(_bitmap : Bitmap): Int {
 
         var tensorImage = TensorImage(DataType.FLOAT32)
         tensorImage.load(_bitmap)
@@ -110,12 +132,11 @@ class MainActivity : ComponentActivity() {
         val outputs = model.process(inputFeature0)
         val outputFeature0 = outputs.outputFeature0AsTensorBuffer
 
-        val result = GetEmotionIdx(outputFeature0.floatArray)
-        return result
+        return getEmotionIdx(outputFeature0.floatArray)
     }
 
-    fun convertToEmotion(i : Int) : String {
-        return emotionList[i];
+    private fun convertToEmotion(i : Int) : String {
+        return emotionList[i]
     }
 }
 

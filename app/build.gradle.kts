@@ -53,6 +53,15 @@ android {
 }
 
 dependencies {
+    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("android.arch.persistence.room:compiler:1.1.1")
+
+    // Room components
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.room:room-common:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    androidTestImplementation("androidx.room:room-testing:2.6.1")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")

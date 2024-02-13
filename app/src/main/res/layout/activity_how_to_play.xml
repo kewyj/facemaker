@@ -32,8 +32,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/aclonica"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
         android:paddingBottom="40dp"
         android:text="1) Emojis will be shown at the top of the screen!\n\n2) Make a face that matches that emoji to increase your score!\n\n3) Match as many as you can before the time runs out!"
         android:textSize="20sp" />

@@ -63,4 +63,13 @@
         android:fontFamily="@font/aclonica"
         android:text="CREDITS"
         android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/testBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/aclonica"
+        android:text="Highscore"
+        android:textSize="24sp" />
 </LinearLayout>
