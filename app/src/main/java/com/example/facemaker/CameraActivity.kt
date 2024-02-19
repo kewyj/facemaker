@@ -81,9 +81,9 @@ class CameraActivity : AppCompatActivity() {
         //        }
 
         // third mtd only captures when button pressed
-        mainBinding.captureIB.setOnClickListener{
-            takePhoto()
-        }
+//        mainBinding.captureIB.setOnClickListener{
+//            takePhoto()
+//        }
     }
 
     private fun checkMultiplePermission(): Boolean {

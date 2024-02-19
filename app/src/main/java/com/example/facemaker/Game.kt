@@ -9,6 +9,8 @@ import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.util.Size
 import android.view.Choreographer
@@ -74,6 +76,10 @@ class Game : AppCompatActivity() {
     private lateinit var  cameraSelector: CameraSelector
     private var lensFacing = CameraSelector.LENS_FACING_FRONT
 
+    private var isCapturing = false
+    private val captureInterval = 100L
+    private var isCameraReady = false
+
     private lateinit var imageProcessor : ImageProcessor
     private lateinit var model : FacialExpressionRecognitionModel
 
@@ -89,6 +95,7 @@ class Game : AppCompatActivity() {
             startCamera()
         }
 
+       // Log.d("DEBUGCAPTURE", "After function startCamera()")
         currScore = 0
         timeLeft = 60000000000
         currFace = faces.keys.toList()[Random.nextInt(faces.size)]
@@ -96,11 +103,11 @@ class Game : AppCompatActivity() {
         setScore()
 
         // only captures when button pressed (to change)
-        mainBinding.captureIB.setOnClickListener{
-           Log.d("DEBUG", "About to take photo")
-            takePhoto()
-
-        }
+//        mainBinding.captureIB.setOnClickListener{
+//           Log.d("DEBUG", "About to take photo")
+//            takePhoto()
+//
+//        }
 
         val timer = object : CountDownTimer(61000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -118,7 +125,38 @@ class Game : AppCompatActivity() {
         timer.start()
     }
 
+    private fun startCaptureTimer() {
+        //Log.d("DEBUGCAPTURE", "startCaptureTimer")
+        if (!isCapturing) {
+            isCapturing = true
+            //Log.d("DEBUGCAPTURE", "before setting handler")
+            val handler = Handler(Looper.getMainLooper())
+            //Log.d("DEBUGCAPTURE","before setting runnable")
+            val runnable = object : java.lang.Runnable {
+                override fun run() {
+                    //Log.d("DEBUGCAPTURE", "before if statement")
+                    if (isCapturing && isCameraReady) {
+                        //Log.d("DEBUGCAPTURE", "before takePhoto()")
+                        takePhoto()
+                        handler.postDelayed(this, captureInterval)
+                    }
+                }
+            }
+            handler.post(runnable)
+        }
+    }
+
+    private fun stopCaptureTimer() {
+        isCapturing = false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopCaptureTimer()
+    }
+
     private fun checkMultiplePermission(): Boolean {
+       // Log.d("DEBUGCAPTURE", "checkMultiplePermission")
         val listPermissionNeeded = arrayListOf<String>()
         for (permission in multiplePermissionNameList) {
             if (ContextCompat.checkSelfPermission(
@@ -145,6 +183,7 @@ class Game : AppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray,
     ) {
+        //Log.d("DEBUGCAPTURE", "onRequestPermissionsResult")
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == multiplePermissionId) {
@@ -194,7 +233,7 @@ class Game : AppCompatActivity() {
     }
 
     private fun takePhoto() {
-        Log.d("CAMERA", "takePhoto")
+       // Log.d("CAMERA", "takePhoto")
 
 //        val imageFolder = File(
 //            Environment.getExternalStoragePublicDirectory(
@@ -215,7 +254,7 @@ class Game : AppCompatActivity() {
 //        }
 //        val outputOption = ImageCapture.OutputFileOptions.Builder(imageFile).build()
 
-        Log.d("CAMERA", "reached here before image capture")
+        //Log.d("CAMERA", "reached here before image capture")
 
         imageCapture.takePicture(
 //        outputOption,
@@ -236,7 +275,7 @@ class Game : AppCompatActivity() {
 //                    exception.message.toString(),
 //                    Toast.LENGTH_LONG
 //                ).show()
-//                Log.d("ERROR", exception.message.toString());
+//                //Log.d("ERROR", exception.message.toString());
 //            }
 //        }
 
@@ -261,7 +300,7 @@ class Game : AppCompatActivity() {
                     }
                 }
         )
-        Log.d("CAMERA", "onCaptureSuccess Finish calling")
+        //Log.d("CAMERA", "onCaptureSuccess Finish calling")
     }
 
     private fun imageProxyToBitmap(image: ImageProxy): Bitmap {
@@ -273,6 +312,7 @@ class Game : AppCompatActivity() {
     }
 
     private fun startCamera(){
+        //Log.d("DEBUGCAPTURE", "startCamera")
         val camreProviderFuture = ProcessCameraProvider.getInstance(this)
         camreProviderFuture.addListener({
             cameraProvider = camreProviderFuture.get()
@@ -281,6 +321,7 @@ class Game : AppCompatActivity() {
     }
 
     private fun bindCameraUserCases() {
+        //Log.d("DEBUGCAPTURE", "bindCameraUserCases")
         // set resolution to 244 by 244
         val targetResolution = Size(244,244)
         //val screenAspectRatio = aspectRatio(mainBinding.previewView.width, mainBinding.previewView.height)
@@ -296,12 +337,19 @@ class Game : AppCompatActivity() {
             .setTargetRotation(rotation).build()
         cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
+        //Log.d("DEBUGCAPTURE","before isCameraReady set to true")
+        isCameraReady = true
+
         try{
+            //Log.d("DEBUGCAPTURE","came into try")
             cameraProvider.unbindAll()
             camera = cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, preview, imageCapture)
         } catch (e:Exception){
+            //Log.d("DEBUGCAPTURE", "came")
             e.printStackTrace()
         }
+
+        startCaptureTimer()
     }
 
     fun getCurrentFace() : String {
