@@ -34,7 +34,7 @@
         android:fontFamily="@font/aclonica"
         android:gravity="center"
         android:paddingTop="30dp"
-        android:text="@string/score"
+        android:text="Score:"
         android:textSize="24sp" />
 
     <TextView
@@ -45,7 +45,7 @@
         android:fontFamily="@font/aclonica"
         android:gravity="center"
         android:paddingTop="30dp"
-        android:text="@string/highscore"
+        android:text="Highscore:"
         android:textSize="24sp" />
 
     <Button

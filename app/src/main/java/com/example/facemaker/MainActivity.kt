@@ -13,6 +13,8 @@ import androidx.activity.ComponentActivity
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
 import com.example.facemaker.ml.FacialExpressionRecognitionModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -32,6 +34,20 @@ class MainActivity : ComponentActivity() {
         setContentView(R.layout.activity_main)
         setLogo()
 
+        val user = Firebase.auth.currentUser
+        if (user == null) {
+            val intent = Intent(this@MainActivity, Auth::class.java)
+            startActivity(intent)
+        }
+        user?.let {
+            val email = it.email
+            findViewById<TextView>(R.id.username).text = "Welcome, " + email.toString().substringBefore('@')
+        }
+        findViewById<Button>(R.id.logout).setOnClickListener {
+            Firebase.auth.signOut()
+            val intent = Intent(this@MainActivity, Auth::class.java)
+            startActivity(intent)
+        }
         findViewById<Button>(R.id.startGame).setOnClickListener {
             val intent = Intent(this@MainActivity, Game::class.java)
             startActivity(intent)
