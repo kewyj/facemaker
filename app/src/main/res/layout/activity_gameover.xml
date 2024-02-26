@@ -38,7 +38,7 @@
         android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/highscore"
+        android:id="@+id/gameover_highscore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"

@@ -52,7 +52,6 @@ class Game : AppCompatActivity() {
     )
     private var currScore : Int = 0
     private var currFace :String= "happy"
-    private var timeLeft :Long = 60000000000
 
     // Camera stuff
     private val mainBinding: ActivityGameBinding by lazy{
@@ -97,7 +96,6 @@ class Game : AppCompatActivity() {
 
        // Log.d("DEBUGCAPTURE", "After function startCamera()")
         currScore = 0
-        timeLeft = 60000000000
         currFace = faces.keys.toList()[Random.nextInt(faces.size)]
         updateFace()
         setScore()

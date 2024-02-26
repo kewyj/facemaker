@@ -15,6 +15,8 @@ import androidx.core.graphics.drawable.toBitmap
 import com.example.facemaker.ml.FacialExpressionRecognitionModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -29,10 +31,15 @@ class MainActivity : ComponentActivity() {
     private lateinit var imageProcessor : ImageProcessor
     private lateinit var model : FacialExpressionRecognitionModel
 
+    private lateinit var db : FirebaseFirestore
+    private lateinit var username : String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setLogo()
+
+        db = Firebase.firestore
 
         val user = Firebase.auth.currentUser
         if (user == null) {
@@ -41,8 +48,16 @@ class MainActivity : ComponentActivity() {
         }
         user?.let {
             val email = it.email
-            findViewById<TextView>(R.id.username).text = "Welcome, " + email.toString().substringBefore('@')
+            username = email.toString().substringBefore('@').replace('.', '_')
+            findViewById<TextView>(R.id.username).text = "Welcome, " + username
         }
+
+        GetHighscore {hs->
+            findViewById<TextView>(R.id.highscore).text = "Highscore: " + hs.toString()
+        }
+
+
+
         findViewById<Button>(R.id.logout).setOnClickListener {
             Firebase.auth.signOut()
             val intent = Intent(this@MainActivity, Auth::class.java)
@@ -132,6 +147,25 @@ class MainActivity : ComponentActivity() {
 
     fun convertToEmotion(i : Int) : String {
         return emotionList[i];
+    }
+
+    fun GetHighscore(callback: (Int) -> Unit) {
+
+        val docRef = db.collection("user_details").document(username)
+        docRef.get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val highscore = document.get("highscore").toString().toInt()
+                    callback(highscore)
+                } else {
+                    Log.d("GameOver", "No such document")
+                    callback(-1) // Or handle accordingly if document doesn't exist
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d("GameOver", "get failed with ", exception)
+                callback(-1) // Or handle failure accordingly
+            }
     }
 }
 
