@@ -357,6 +357,7 @@ class Game : AppCompatActivity() {
     fun incrementScore() {
         ++currScore
         setScore()
+        nextFace()
     }
 
     private fun setScore() {
