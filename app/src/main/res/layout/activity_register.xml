@@ -7,6 +7,16 @@
     android:orientation="vertical"
     tools:context=".Register">
 
+    <TextView
+        android:id="@+id/htpLogo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:paddingTop="30dp"
+        android:text="FaceMaker"
+        android:textSize="24sp" />
+
     <EditText
         android:id="@+id/register_email"
         android:layout_width="match_parent"
@@ -27,7 +37,15 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/aclonica"
         android:text="SIGN UP"
-        android:textSize="15sp" />
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/signup_backbutton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aclonica"
+        android:text="BACK"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/registerFeedback"

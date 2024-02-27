@@ -30,6 +30,11 @@ class Register : AppCompatActivity() {
 
             registerUser(textEmail, textPass)
         }
+
+        findViewById<Button>(R.id.signup_backbutton).setOnClickListener {
+            val intent = Intent(this@Register, MainActivity::class.java)
+            startActivity(intent)
+        }
     }
     private fun registerUser(email : String, pass : String) {
         auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(this) {task->

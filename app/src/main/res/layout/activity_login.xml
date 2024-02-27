@@ -7,6 +7,16 @@
     android:orientation="vertical"
     tools:context=".Login">
 
+    <TextView
+        android:id="@+id/htpLogo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:paddingTop="30dp"
+        android:text="FaceMaker"
+        android:textSize="24sp" />
+
     <EditText
         android:id="@+id/login_email"
         android:layout_width="match_parent"
@@ -29,9 +39,18 @@
         android:text="LOG IN"
         android:textSize="16sp" />
 
+    <Button
+        android:id="@+id/login_backbutton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aclonica"
+        android:text="BACK"
+        android:textSize="16sp" />
+
     <TextView
         android:id="@+id/loginFeedback"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center" />
+
 </LinearLayout>

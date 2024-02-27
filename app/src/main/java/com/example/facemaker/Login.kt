@@ -43,6 +43,11 @@ class Login : AppCompatActivity() {
 
             loginUser(textEmail, textPass)
         }
+
+        findViewById<Button>(R.id.login_backbutton).setOnClickListener {
+            val intent = Intent(this@Login, MainActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     fun loginUser(email : String, pass : String) {
