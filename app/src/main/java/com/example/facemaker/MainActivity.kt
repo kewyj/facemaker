@@ -56,7 +56,10 @@ class MainActivity : ComponentActivity() {
             findViewById<TextView>(R.id.highscore).text = "Highscore: " + hs.toString()
         }
 
-
+        findViewById<Button>(R.id.leaderboard).setOnClickListener {
+            val intent = Intent(this@MainActivity, Leaderboard::class.java)
+            startActivity(intent)
+        }
 
         findViewById<Button>(R.id.logout).setOnClickListener {
             Firebase.auth.signOut()

@@ -27,7 +27,7 @@
         android:fontFamily="@font/aclonica"
         android:gravity="center_horizontal|center_vertical"
         android:paddingTop="80dp"
-        android:paddingBottom="150dp"
+        android:paddingBottom="80dp"
         android:text="FaceMaker"
         android:textSize="48sp"
         android:textStyle="bold" />
@@ -68,7 +68,19 @@
         android:fontFamily="@font/aclonica"
         android:text="CREDITS"
         android:textSize="24sp" />
+    <View
+        android:id="@+id/pad4"
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
 
+    <Button
+        android:id="@+id/leaderboard"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/aclonica"
+        android:text="LEADERBOARDS"
+        android:textSize="24sp" />
     <View
         android:id="@+id/pad3"
         android:layout_width="match_parent"
@@ -82,4 +94,6 @@
         android:fontFamily="@font/aclonica"
         android:text="LOGOUT"
         android:textSize="24sp" />
+
+
 </LinearLayout>
