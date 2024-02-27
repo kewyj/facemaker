@@ -11,19 +11,23 @@
         android:id="@+id/login_email"
         android:layout_width="match_parent"
         android:layout_height="80dp"
+        android:fontFamily="@font/aclonica"
         android:hint="Email" />
 
     <EditText
         android:id="@+id/login_password"
         android:layout_width="match_parent"
         android:layout_height="80dp"
+        android:fontFamily="@font/aclonica"
         android:hint="Password" />
 
     <Button
         android:id="@+id/loginbutton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Log In" />
+        android:fontFamily="@font/aclonica"
+        android:text="LOG IN"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/loginFeedback"
