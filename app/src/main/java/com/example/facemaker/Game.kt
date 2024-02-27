@@ -289,6 +289,11 @@ class Game : AppCompatActivity() {
                         // Run facial expression model
                         var intResult = runMLModel(bitmap)
                         var result = convertToEmotion(intResult)
+
+                        // check and increment score
+                        if (result == getCurrentFace())
+                            incrementScore()
+
                         Log.d("logging", result)
                     }
 
