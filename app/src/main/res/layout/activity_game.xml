@@ -52,10 +52,14 @@
 
     </LinearLayout>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="410dp"
         android:layout_height="410dp"
+        android:layout_gravity="center"
         android:layout_marginTop="91dp" >
 
         <ImageView
@@ -64,9 +68,11 @@
             android:layout_height="match_parent"
             android:background="#00000000"
             app:srcCompat="@drawable/headshot"
-            android:layout_alignParentTop="true"
             android:visibility="visible"/>
+
     </androidx.camera.view.PreviewView>
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/timer"
