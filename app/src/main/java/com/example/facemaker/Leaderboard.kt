@@ -1,5 +1,6 @@
 package com.example.facemaker
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +25,10 @@ class Leaderboard : AppCompatActivity() {
         recyclerView.adapter = adapter
         db = Firebase.firestore
 
+        findViewById<Button>(R.id.lbBackToMenu).setOnClickListener {
+            val intent = Intent(this@Leaderboard, MainActivity::class.java)
+            startActivity(intent)
+        }
 
         GetHighScoreData { highscore ->
             adapter.setData(highscore)

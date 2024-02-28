@@ -5,6 +5,7 @@
     android:orientation="vertical">
 
     <!-- First horizontal layout containing two buttons -->
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
@@ -65,6 +66,15 @@
             android:text="Total Faces Made" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/lbBackToMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/aclonica"
+        android:text="BACK"
+        android:textSize="24sp" />
 
     <!-- Other views can be added below this horizontal layout -->
 
