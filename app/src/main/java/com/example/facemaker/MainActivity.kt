@@ -13,6 +13,7 @@ import androidx.activity.ComponentActivity
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
 import com.example.facemaker.ml.FacialExpressionRecognitionModel
+import com.example.facemaker.ml.FacialExpressionRecognitionModelV2
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -29,7 +30,7 @@ class MainActivity : ComponentActivity() {
     private var bitmap = createBitmap(224,224, Bitmap.Config.RGB_565)
 
     private lateinit var imageProcessor : ImageProcessor
-    private lateinit var model : FacialExpressionRecognitionModel
+    private lateinit var model : FacialExpressionRecognitionModelV2
 
     private lateinit var db : FirebaseFirestore
     private lateinit var username : String
@@ -126,7 +127,7 @@ class MainActivity : ComponentActivity() {
             .add(ResizeOp(224,224, ResizeOp.ResizeMethod.BILINEAR))
             .add(NormalizeOp(0.0f, 255.0f))
             .build()
-        model = FacialExpressionRecognitionModel.newInstance(this)
+        model = FacialExpressionRecognitionModelV2.newInstance(this)
     }
 
     fun runMLModel(_bitmap : Bitmap): Int {
