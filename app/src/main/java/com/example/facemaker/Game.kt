@@ -33,7 +33,7 @@ import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.random.Random
-import com.example.facemaker.ml.FacialExpressionRecognitionModel
+import com.example.facemaker.ml.FacialExpressionRecognitionModelV2
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -46,9 +46,9 @@ class Game : AppCompatActivity() {
     private val emotionList = arrayOf("Neutral", "Happy", "Sad", "Surprise", "Fear", "Disgust", "Anger", "Contempt")
 
     private val faces = mapOf(
-        "happy" to 0x1F60A,
-        "sad" to 0x1F614,
-        "angry" to 0x1F620
+        "Happy" to 0x1F60A,
+        "Sad" to 0x1F614,
+        "Anger" to 0x1F620
     )
     private var currScore : Int = 0
     private var currFace :String= "happy"
@@ -76,11 +76,11 @@ class Game : AppCompatActivity() {
     private var lensFacing = CameraSelector.LENS_FACING_FRONT
 
     private var isCapturing = false
-    private val captureInterval = 100L
+    private val captureInterval = 10L
     private var isCameraReady = false
 
     private lateinit var imageProcessor : ImageProcessor
-    private lateinit var model : FacialExpressionRecognitionModel
+    private lateinit var model : FacialExpressionRecognitionModelV2
 
     //bitmap
     //
@@ -291,10 +291,12 @@ class Game : AppCompatActivity() {
                         var result = convertToEmotion(intResult)
 
                         // check and increment score
-                        if (result == getCurrentFace())
+                        var temp = getCurrentFace()
+                        if (result == temp)
                             incrementScore()
 
-                        Log.d("logging", result)
+                        Log.d("logging", "ffffff:" + result)
+                        Log.d("logging", "actual:" + temp)
                     }
 
                     override fun onError(exception: ImageCaptureException) {
@@ -389,7 +391,7 @@ class Game : AppCompatActivity() {
             .add(ResizeOp(224,224, ResizeOp.ResizeMethod.BILINEAR))
             .add(NormalizeOp(0.0f, 255.0f))
             .build()
-        model = FacialExpressionRecognitionModel.newInstance(this)
+        model = FacialExpressionRecognitionModelV2.newInstance(this)
     }
 
     fun runMLModel(_bitmap : Bitmap): Int {

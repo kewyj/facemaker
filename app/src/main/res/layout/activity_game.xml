@@ -54,23 +54,24 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    <androidx.camera.view.PreviewView
-        android:id="@+id/previewView"
-        android:layout_width="410dp"
-        android:layout_height="410dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="91dp" >
+        android:layout_height="590dp">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#00000000"
-            app:srcCompat="@drawable/headshot"
-            android:visibility="visible"/>
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewView"
+            android:layout_width="410dp"
+            android:layout_height="410dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="91dp">
 
-    </androidx.camera.view.PreviewView>
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#00000000"
+                android:visibility="visible"
+                app:srcCompat="@drawable/headshot" />
+
+        </androidx.camera.view.PreviewView>
 
     </FrameLayout>
 
