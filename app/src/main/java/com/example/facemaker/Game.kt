@@ -46,9 +46,9 @@ class Game : AppCompatActivity() {
     private val emotionList = arrayOf("Neutral", "Happy", "Sad", "Surprise", "Fear", "Disgust", "Anger", "Contempt")
 
     private val faces = mapOf(
-        "happy" to 0x1F60A,
-        "sad" to 0x1F614,
-        "angry" to 0x1F620
+        "Happy" to 0x1F60A,
+        "Sad" to 0x1F614,
+        "Anger" to 0x1F620
     )
     private var currScore : Int = 0
     private var currFace :String= "happy"
