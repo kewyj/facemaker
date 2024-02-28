@@ -9,12 +9,17 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="user" />
+        android:fontFamily="@font/aclonica"
+        android:text="user"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/leaderboardvalue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="value" />
+        android:fontFamily="@font/aclonica"
+        android:gravity="center"
+        android:text="value"
+        android:textSize="20sp" />
 </LinearLayout>

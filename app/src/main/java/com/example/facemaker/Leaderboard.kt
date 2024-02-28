@@ -45,7 +45,7 @@ class Leaderboard : AppCompatActivity() {
     private fun GetTotalScoreData(callback: (MutableMap<String, Long>) -> Unit) {
         var userRef = db.collection("user_details")
         userRef.orderBy("facesmade", Query.Direction.DESCENDING)
-            .limit(10)
+            .limit(30)
             .get()
             .addOnSuccessListener { documents ->
                 val totalscore: MutableMap<String, Long> = mutableMapOf()
@@ -65,7 +65,7 @@ class Leaderboard : AppCompatActivity() {
     private fun GetHighScoreData(callback: (MutableMap<String, Long>) -> Unit) {
         var userRef = db.collection("user_details")
         userRef.orderBy("highscore", Query.Direction.DESCENDING)
-            .limit(10)
+            .limit(30)
             .get()
             .addOnSuccessListener { documents ->
                 val highscore: MutableMap<String, Long> = mutableMapOf()
