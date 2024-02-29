@@ -14,6 +14,7 @@ import android.os.Looper
 import android.util.Log
 import android.util.Size
 import android.view.Choreographer
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -100,13 +101,6 @@ class Game : AppCompatActivity() {
         updateFace()
         setScore()
 
-        // only captures when button pressed (to change)
-//        mainBinding.captureIB.setOnClickListener{
-//           Log.d("DEBUG", "About to take photo")
-//            takePhoto()
-//
-//        }
-
         val timer = object : CountDownTimer(61000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsLeft = millisUntilFinished / 1000
@@ -121,6 +115,15 @@ class Game : AppCompatActivity() {
         }
 
         timer.start()
+
+        findViewById<Button>(R.id.skipButton).setOnClickListener {
+            nextFace()
+            // penalty points
+            if (currScore >= 1)
+            {
+                currScore -= 1;
+            }
+        }
     }
 
     private fun startCaptureTimer() {
@@ -231,53 +234,9 @@ class Game : AppCompatActivity() {
     }
 
     private fun takePhoto() {
-       // Log.d("CAMERA", "takePhoto")
-
-//        val imageFolder = File(
-//            Environment.getExternalStoragePublicDirectory(
-//                Environment.DIRECTORY_PICTURES), "Images"
-//        )
-//        if (!imageFolder.exists()){
-//            imageFolder.mkdir()
-//        }
-//
-//        var fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis()) + ".jpeg"
-//        var imageFile = File(imageFolder, fileName)
-//        var count = 1
-//
-//        while (imageFile.exists()){
-//            fileName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.getDefault()).format(System.currentTimeMillis()) + "_$count.jpeg"
-//            imageFile = File(imageFolder, fileName)
-//            count++
-//        }
-//        val outputOption = ImageCapture.OutputFileOptions.Builder(imageFile).build()
-
-        //Log.d("CAMERA", "reached here before image capture")
 
         imageCapture.takePicture(
-//        outputOption,
-//        ContextCompat.getMainExecutor(this),
-//        object : ImageCapture.OnImageSavedCallback {
-//            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-//                val message = "Photo Capture Success!"
-//                Toast.makeText(
-//                    this@Game,
-//                    message,
-//                    Toast.LENGTH_LONG
-//                ).show()
-//            }
-//
-//            override fun onError(exception: ImageCaptureException) {
-//                Toast.makeText(
-//                    this@Game,
-//                    exception.message.toString(),
-//                    Toast.LENGTH_LONG
-//                ).show()
-//                //Log.d("ERROR", exception.message.toString());
-//            }
-//        }
 
-                // in future will change to onCaptureSuccess after testing
                 ContextCompat.getMainExecutor(this),
                 object : ImageCapture.OnImageCapturedCallback() {
                     override fun onCaptureSuccess(image: ImageProxy) {
