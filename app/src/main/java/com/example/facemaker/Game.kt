@@ -77,7 +77,7 @@ class Game : AppCompatActivity() {
     private var lensFacing = CameraSelector.LENS_FACING_FRONT
 
     private var isCapturing = false
-    private val captureInterval = 10L
+    private val captureInterval = 200L
     private var isCameraReady = false
 
     private lateinit var imageProcessor : ImageProcessor

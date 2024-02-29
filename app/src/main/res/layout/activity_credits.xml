@@ -36,7 +36,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="40dp"
-        android:text="Roy Lee Fu Sheng\nChen Jia Wen\nJazz Teoh Yu Jue\nMichelle Lor Mee\n Charissa Yip\nKew Yu Jun"
+        android:text="Roy Lee Fu Sheng\nChen Jia Wen\nJazz Teoh Yu Jue\nMichelle Lor\n Charissa Yip\nKew Yu Jun"
         android:textSize="20sp" />
     <Button
         android:id="@+id/creditsBackToMenu"
