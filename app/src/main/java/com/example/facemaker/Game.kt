@@ -116,13 +116,13 @@ class Game : AppCompatActivity() {
 
         timer.start()
 
-        findViewById<Button>(R.id.skipButton).setOnClickListener {
+        findViewById<Button>(R.id.skipFace).setOnClickListener {
             nextFace()
             // penalty points
-            if (currScore >= 1)
-            {
-                currScore -= 1;
-            }
+
+                currScore -= 1
+                setScore()
+
         }
     }
 
