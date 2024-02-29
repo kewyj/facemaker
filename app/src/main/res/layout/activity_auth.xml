@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".Auth">
 
+    <TextView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/aclonica"
+        android:gravity="center_horizontal|center_vertical"
+        android:paddingTop="80dp"
+        android:paddingBottom="80dp"
+        android:text="FaceMaker"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/login"
         android:layout_width="133dp"
