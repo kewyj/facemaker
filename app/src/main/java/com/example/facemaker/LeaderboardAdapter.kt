@@ -1,3 +1,8 @@
+/*!*****************************************************************************
+\file LeaderboardAdapter.kt
+\author Kew Yu Jun
+\date 1/3/2024
+*******************************************************************************/
 package com.example.facemaker
 import android.view.LayoutInflater
 import android.view.View

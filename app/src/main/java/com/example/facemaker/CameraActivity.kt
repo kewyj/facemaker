@@ -1,3 +1,8 @@
+/*!*****************************************************************************
+\file CameraActivity.kt
+\author Michelle Lor
+\date 1/3/2024
+*******************************************************************************/
 package com.example.facemaker
 
 import android.content.DialogInterface
@@ -34,11 +39,13 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlinx.coroutines.*
 import java.nio.ByteBuffer
-
+// Define the CameraActivity class which extends AppCompatActivity
 class CameraActivity : AppCompatActivity() {
+    // Lazily initialize mainBinding using ActivityGameBinding
     private val mainBinding: ActivityGameBinding by lazy{
         ActivityGameBinding.inflate(layoutInflater)
     }
+    // Define constants for permissions and permission request ID
     private val multiplePermissionId = 14
     private val multiplePermissionNameList = if (Build.VERSION.SDK_INT >= 33) {
         arrayListOf(
@@ -50,16 +57,17 @@ class CameraActivity : AppCompatActivity() {
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
     }
-
+    // Declare variables for camera and image capture
     private lateinit var imageCapture: ImageCapture
     private lateinit var cameraProvider: ProcessCameraProvider
     private lateinit var camera: Camera
     private lateinit var  cameraSelector: CameraSelector
     private var lensFacing = CameraSelector.LENS_FACING_FRONT
 
-    //bitmap
+    // Declare a bitmap variable
     lateinit var bitmap: Bitmap
 
+    // Override the onCreate method
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(mainBinding.root)
@@ -67,25 +75,8 @@ class CameraActivity : AppCompatActivity() {
         if (checkMultiplePermission()) {
             startCamera()
         }
-
-        // first mtd
-        // val cameraController = CameraController()
-        // cameraController.startCapture()
-
-        // second mtd
-        //        runBlocking {
-        //            repeat(1000){
-        //                takePhoto()
-        //                delay(50)
-        //            }
-        //        }
-
-        // third mtd only captures when button pressed
-//        mainBinding.captureIB.setOnClickListener{
-//            takePhoto()
-//        }
     }
-
+    // Check for permissions and start the camera if granted
     private fun checkMultiplePermission(): Boolean {
         val listPermissionNeeded = arrayListOf<String>()
         for (permission in multiplePermissionNameList) {
@@ -182,29 +173,6 @@ class CameraActivity : AppCompatActivity() {
         val outputOption = OutputFileOptions.Builder(imageFile).build()
 
         imageCapture.takePicture(
-//            outputOption,
-//            ContextCompat.getMainExecutor(this),
-//            object : ImageCapture.OnImageSavedCallback {
-//                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-//                    val message = "Photo Capture Success!"
-//                    Toast.makeText(
-//                        this@CameraActivity,
-//                        message,
-//                        Toast.LENGTH_LONG
-//                    ).show()
-//                }
-//
-//                override fun onError(exception: ImageCaptureException) {
-//                    Toast.makeText(
-//                        this@CameraActivity,
-//                        exception.message.toString(),
-//                        Toast.LENGTH_LONG
-//                    ).show()
-//                    Log.d("ERROR", exception.message.toString());
-//                }
-//            }
-
-            // in future will change to onCaptureSuccess after testing
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageCapturedCallback() {
                 override fun onCaptureSuccess(image: ImageProxy) {
@@ -234,21 +202,9 @@ class CameraActivity : AppCompatActivity() {
             bindCameraUserCases()
         }, ContextCompat.getMainExecutor(this))
     }
-
-//    private fun aspectRatio(width: Int, height: Int): Int {
-//        val previewRatio = maxOf(width, height).toDouble() / minOf(width, height)
-//        return if (abs(previewRatio - 4.0 / 3.0) <= abs(previewRatio - 16.0 / 9.0)) {
-//            AspectRatio.RATIO_4_3
-//        } else {
-//            AspectRatio.RATIO_16_9
-//        }
-//    }
     private fun bindCameraUserCases() {
-        // set resolution to 244 by 244
         val targetResolution = Size(244,244)
-        //val screenAspectRatio = aspectRatio(mainBinding.previewView.width, mainBinding.previewView.height)
         val rotation = mainBinding.previewView.display.rotation
-        //val resolutionSelector = ResolutionSelector.Builder().addTargetResolution(resolution).build()
 
         val preview = Preview.Builder().setTargetResolution(targetResolution)
             .setTargetRotation(rotation).build().also{
@@ -267,28 +223,3 @@ class CameraActivity : AppCompatActivity() {
         }
     }
 }
-
-// first mtd
-//class CameraController {
-//    private val handler = Handler()
-//    private var isCapturing = false
-//    fun startCapture() {
-//        isCapturing = true
-//        // 50 milliseconds = 0.05 sec
-//        handler.postDelayed(captureRunnable, 50)
-//    }
-//
-//    fun stopCapture() {
-//        isCapturing = false
-//        handler.removeCallbacks(captureRunnable)
-//    }
-//
-//    private val captureRunnable = object : Runnable{
-//        override fun run() {
-//            if (isCapturing) {
-//
-//                handler.postDelayed(this, 50)
-//            }
-//        }
-//    }
-//}

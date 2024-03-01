@@ -1,3 +1,8 @@
+/*!*****************************************************************************
+\file MainActivity.kt
+\author Kew Yu Jun, Michelle Lor, Jazz Teoh Yu Jue
+\date 1/3/2024
+*******************************************************************************/
 package com.example.facemaker
 
 import android.content.Intent

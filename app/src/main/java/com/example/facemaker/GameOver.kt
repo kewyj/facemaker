@@ -1,3 +1,8 @@
+/*!*****************************************************************************
+\file GameOver.kt
+\author Kew Yu Jun, Chen Jia Wen
+\date 1/3/2024
+*******************************************************************************/
 package com.example.facemaker
 
 import android.content.Intent
