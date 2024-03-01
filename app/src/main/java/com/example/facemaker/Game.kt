@@ -34,7 +34,7 @@ import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.random.Random
-import com.example.facemaker.ml.FacialExpressionRecognitionModelV2
+import com.example.facemaker.ml.FacialExpressionRecognitionModelV3
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -81,7 +81,7 @@ class Game : AppCompatActivity() {
     private var isCameraReady = false
 
     private lateinit var imageProcessor : ImageProcessor
-    private lateinit var model : FacialExpressionRecognitionModelV2
+    private lateinit var model : FacialExpressionRecognitionModelV3
 
     //bitmap
     //
@@ -350,7 +350,7 @@ class Game : AppCompatActivity() {
             .add(ResizeOp(224,224, ResizeOp.ResizeMethod.BILINEAR))
             .add(NormalizeOp(0.0f, 255.0f))
             .build()
-        model = FacialExpressionRecognitionModelV2.newInstance(this)
+        model = FacialExpressionRecognitionModelV3.newInstance(this)
     }
 
     fun runMLModel(_bitmap : Bitmap): Int {
